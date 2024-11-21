@@ -10,7 +10,70 @@ session_start();
     <link rel="stylesheet" href="style.css">
     <title>Dashboard</title>
     <style>
-        /* Custom styles can be added here */
+            .custom-card{
+        width:900px;
+    }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f7fafc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .custom-card {
+        width: 900px;
+    }
+
+    .sidebar-menu {
+        background-color: #2d3748;
+        color: white;
+    }
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        color: #cbd5e0;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-menu a:hover {
+        background-color: #4a5568;
+        color: white;
+    }
+
+    .sidebar-menu .active {
+        background-color: #4a5568;
+    }
+
+    .main {
+        background: #edf2f7;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .breadcrumb {
+        font-size: 14px;
+        color: #718096;
+        margin-left: 10px;
+    }
+
+    .breadcrumb span {
+        color: #4a5568;
+    }
+
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .sidebar-menu {
+            width: 200px;
+        }
+
+        .main {
+            padding: 10px;
+        }
+    }
     </style>
 </head>
 <body class="text-gray-800 font-inter">
@@ -51,7 +114,7 @@ session_start();
     <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 sidebar-overlay md:hidden"></div>
     
     <!-- Main Content -->
-    <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all">
+    <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-50 min-h-screen transition-all main">
         <div class="py-2 px-6 bg-white flex items-center shadow-md sticky top-0 left-0 z-30">
             <button type="button" class="sidebar-toggle text-lg text-gray-600">
                 <i class="ri-menu-line"></i>
@@ -82,13 +145,14 @@ session_start();
         </div>
 
         <div class="p-6">
-    <div class="bg-gray-900 rounded-md items-center h-[230px]">
+    <div class="bg-[#3d4656] rounded-md items-center h-[230px]">
         <div class="flex flex-col">
-            <h1 class="text-white text-4xl p-6 mt-10 font-extrabold mb-0">
-                Selamat Datang <?=$_SESSION['nama']?> !
+            <h1 class="text-white text-4xl p-6 mt-10  font-extrabold mb-0 xs:p-3 md:mt-6 xs:mt-4 xs:ml-3 xs:text-3xl">
+                Selamat Datang 
+                <?=$_SESSION['nama']?> !
             </h1>
-            <p class="text-white text-lg ml-6 ">
-                Anda dapat melakukan pengajuan secara online
+            <p class="text-white text-lg ml-6 xs:text-sm ">
+                Anda dapat melakukan pengajuan secara online 
             </p>
         </div>
     </div>

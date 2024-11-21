@@ -55,26 +55,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         /* Menambah styling untuk select box */
         select {
-            padding-right: 2rem;  /* Memberikan ruang ekstra pada sisi kanan untuk ikon */
-            appearance: none;     /* Menghilangkan ikon default dropdown */
-            -webkit-appearance: none; /* Menghilangkan ikon di Safari */
-            -moz-appearance: none;    /* Menghilangkan ikon di Firefox */
+            padding-right: 2rem;  
+            appearance: none;     
+            -webkit-appearance: none; 
+            -moz-appearance: none;    
         }
-
-        /* Styling ikon Remix */
         select + span {
-            font-size: 1.2rem;  /* Ukuran ikon */
-            pointer-events: none; /* Menonaktifkan interaksi dengan ikon */
+            font-size: 1.2rem;  
+            pointer-events: none; 
             transition: color 0.3s ease;
         }
-
         select:focus + span {
-            color: #4CAF50;  /* Mengubah warna ikon saat select dalam keadaan focus */
+            color: #4CAF50; 
         }
 
-        /* Menambahkan styling untuk input */
         input {
-            padding-left: 2.5rem; /* Memberikan ruang di kiri untuk ikon */
+            padding-left: 2.5rem; 
         }
     </style>
 </head>
@@ -85,9 +81,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="flex flex-col items-center justify-center px-5 py-8 mx-auto md:h-screen lg:py-0">
             <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
                 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <div class="flex justify-center">
-                        <!-- <img src="./img/poltek.png" class="w-[10rem] h-auto" alt="Logo Poltek"> -->
-                    </div>
+                <div class="flex flex-col justify-center items-center text-3xl">
+    <!-- Teks PBL - 114 dalam satu baris -->
+    <div class="flex items-center">
+        <b>PBL</b> - 114
+    </div>
+
+    <!-- Teks Aplikasi Pengajuan Izin yang berada di bawah PBL 114 -->
+    <p class="text-sm mt-2">Aplikasi Pengajuan Izin</p>
+</div>
+
+
+                    
                     <form class="space-y-4 md:space-y-6" action="" method="post">
                         <!-- Dropdown untuk memilih jenis user -->
                         <div class="relative">
@@ -126,3 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </section>
 </body>
 </html>
+
+
+
+

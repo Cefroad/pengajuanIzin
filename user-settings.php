@@ -16,6 +16,63 @@ date_default_timezone_set('Asia/Jakarta');
     .custom-card{
         width:900px;
     }
+    body {
+        font-family: 'Inter', sans-serif;
+        background: #f7fafc;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    .sidebar-menu {
+        background-color: #2d3748;
+        color: white;
+    }
+
+    .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        color: #cbd5e0;
+        transition: background-color 0.3s ease;
+    }
+
+    .sidebar-menu a:hover {
+        background-color: #4a5568;
+        color: white;
+    }
+
+    .sidebar-menu .active {
+        background-color: #4a5568;
+    }
+
+    .main {
+        background: #edf2f7;
+        min-height: 100vh;
+        padding: 20px;
+    }
+
+    .breadcrumb {
+        font-size: 14px;
+        color: #718096;
+        margin-left: 10px;
+    }
+
+    .breadcrumb span {
+        color: #4a5568;
+    }
+
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .sidebar-menu {
+            width: 200px;
+        }
+
+        .main {
+            padding: 10px;
+        }
+    }
 </style>
 <body class="text-gray-800 font-inter">
     <!-- start: Sidebar -->
@@ -83,41 +140,30 @@ date_default_timezone_set('Asia/Jakarta');
                 </li>
             </ul>
         </div>
-        <div class="p-6">
-    <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md flex">
-        <div class="flex flex-col items-center">
-            <img src="https://placehold.co/180x180" class="object-cover" alt="">
-            <div class="pt-2 text-lg font-bold text-center"><?=$_SESSION['nama']?></div>
-        </div>
-        
-        <div class="flex justify-between pl-6 space-x-6">
-    <!-- Card Kiri -->
-    <div class="bg-white border border-gray-200 custom-card rounded-md p-4">
-        <h4 class="font-bold text-lg">User Detail</h4>
-        <div class="font-bold pt-4 text-base">Email Address</div>
-        <div class="text-sm text-blue-600"><?=$_SESSION['email']?></div>
-        
-        <!-- Menambahkan zona waktu -->
-        <div class="font-bold pt-4 text-base">Timezone</div>
-        <div class="text-sm text-gray-600"><?=date_default_timezone_get();?></div>
-        
-        <div class="pt-4">
-            <a href="profil-user.php" class="text-blue-600 text-sm hover:underline">Edit Profil</a>
-        </div>
-    </div>
+        <div class="p-6">      
+            <div class="flex justify-between mr-4 space-x-6">
+                <!-- Card Kanan -->
+                <div class="bg-white border border-gray-200 w-full max-w-xs rounded-md p-4">
+                    <h4 class="font-bold text-lg">Settings</h4>
 
-    <!-- Card Kanan -->
-    <div class="bg-white border border-gray-200 w-full max-w-xs rounded-md p-4">
-        <h4 class="font-bold text-lg">Settings</h4>
-        
-        <div class="pt-4">
-            <a href="logout.php" class="text-red-600 text-sm hover:underline">Logout</a>
+                    <!-- Tombol Logout dengan Ikon -->
+                    <div class="pt-4">
+                        <a href="logout.php" class="flex items-center text-red-600 text-sm hover:underline">
+                            <i class="ri-logout-box-line mr-2 text-lg"></i> Logout
+                        </a>
+                    </div>
+
+                    <!-- Tombol Profil dengan Ikon -->
+                    <div class="pt-4">
+                        <a href="profile.php" class="flex items-center text-blue-600 text-sm hover:underline">
+                            <i class="ri-user-line mr-2 text-lg"></i> Profil
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 
-    </div>
 </div>
 
 
