@@ -1,9 +1,6 @@
 <?php
 session_start();
 include "koneksi.php";
-//pemanggilan table
-$result = mysqli_query($connect,"SELECT * FROM pengajuan_izin");
-$row = mysqli_fetch_assoc($result);
 
 $queryIzin = "SELECT COUNT(*) AS totalIzin FROM pengajuan_izin";
 $resultIzin = mysqli_query($connect, $queryIzin);
@@ -44,11 +41,29 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                 </a>
             </li>
             <li class="mb-1 group">
+                <a href="#" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
+                    <i class="ri-inbox-archive-line mr-3 text-lg"></i>
+                    <span class="text-sm">Manage Data</span>
+                    <i class="ri-arrow-right-s-line ml-auto group-[.selected]:rotate-90"></i>
+                </a>
+                <ul class="pl-7 mt-2 hidden group-[.selected]:block">
+                    <li class="mb-4">
+                        <a href="karyawan.php" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Karyawan</a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Data Izin</a>
+                    </li>
+                    <li class="mb-4">
+                        <a href="#" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Departemen</a>
+                    </li>
+                </ul>
+            </li>
+            <!-- <li class="mb-1 group">
                 <a href="karyawan.php" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md">
                     <i class="ri-user-line mr-3 text-lg"></i>
                     <span class="text-sm">Karyawan</span>
                 </a>
-            </li>
+            </li> -->
             <li class="mb-1 group">
                 <a href="pengajuan_izin.php" class="flex items-center py-2 px-4 text-gray-300 hover:bg-gray-950 hover:text-gray-100 rounded-md">
                     <i class="ri-inbox-line mr-3 text-lg"></i>
@@ -146,23 +161,30 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                             </tr>
                         </thead>
                         <tbody>
+                            <?php
+                            $result = mysqli_query($connect,"SELECT * FROM pengajuan_izin p JOIN karyawan k ON p.id_karyawan = k.id_karyawan JOIN jenis_izin j ON p.id_jenis = j.id_jenis");
+                            while($data = mysqli_fetch_assoc($result)){
+                            ?>
                             <tr>
                                 <td class="py-2 px-4 border-b border-b-gray-50">
-                                <span class="text-[13px] font-medium text-gray-400">None</span>
+                                <span class="text-[13px] font-medium text-gray-400"><?= $data['nama'] ?></span>
                                 </td>
                                 <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400">None</span>
+                                    <span class="text-[13px] font-medium text-gray-400"><?= $data['jenis_izin'] ?></span>
                                 </td>
                                 <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400">None</span>
+                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['tanggal_izin_mulai']?></span>
                                 </td>
                                 <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400">None</span>
+                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['tanggal_izin_selesai']?></span>
                                 </td>
                                 <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400">None</span>
+                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['status']?></span>
                                 </td>
                             </tr>
+                            <?php
+                            }
+                            ?>
                         </tbody>
                     </table>
                 </div>

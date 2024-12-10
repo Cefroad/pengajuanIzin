@@ -6,10 +6,3 @@ function getCurrentPage() {
 }
 
 ?>
-<script>
-        function confirmLogout(){
-            if(confirm("Apakah Anda ingin Logout ?")){
-                Window.location.href = "logout.php";
-            }
-        }
-    </script>
