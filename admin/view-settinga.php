@@ -2,6 +2,7 @@
 session_start();
 include "koneksi.php";
 date_default_timezone_set('Asia/Jakarta');
+$id = $_SESSION['id_admin'];
 ?>
 <!DOCTYPE html>
 <html lang="en">

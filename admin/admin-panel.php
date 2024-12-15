@@ -2,13 +2,18 @@
 session_start();
 include "koneksi.php";
 
-$queryIzin = "SELECT COUNT(*) AS totalIzin FROM pengajuan_izin";
+$id = $_SESSION['id_admin'];
+$queryAdmin = mysqli_query($connect, "SELECT id_departemen FROM admin WHERE id_admin = $id");
+$rowAdmin = mysqli_fetch_assoc($queryAdmin);
+$id_departemen_admin = $rowAdmin['id_departemen'];
+
+$queryIzin = "SELECT COUNT(*) AS totalIzin FROM pengajuan_izin p JOIN karyawan k ON p.id_karyawan = k.id_karyawan WHERE k.id_departemen = $id_departemen_admin ";
 $resultIzin = mysqli_query($connect, $queryIzin);
 $rowIzin = mysqli_fetch_assoc($resultIzin);
 $totalIzin = $rowIzin['totalIzin'];
 
-// Menghitung total karyawan
-$queryKaryawan = "SELECT COUNT(*) AS totalKaryawan FROM karyawan";
+
+$queryKaryawan = "SELECT COUNT(*) AS totalKaryawan FROM karyawan  WHERE id_departemen = $id_departemen_admin";
 $resultKaryawan = mysqli_query($connect, $queryKaryawan);
 $rowKaryawan = mysqli_fetch_assoc($resultKaryawan);
 $totalKaryawan = $rowKaryawan['totalKaryawan'];
@@ -16,6 +21,7 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,12 +32,13 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
 
     </style>
 </head>
+
 <body class="text-gray-800 font-inter">
     <!-- start: Sidebar -->
     <div class="fixed left-0 top-0 w-64 h-full toggle bg-gray-900 p-4 z-50 sidebar-menu transition-transform md:block ">
         <a href="#" class="flex items-center pb-4 border-b border-b-gray-800">
-            <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded object-cover">
-            <span class="text-lg font-bold text-white ml-3"><?=$_SESSION['namaAdmin']?></span>
+            <img src="view-image.php?id=<?php echo $id ?>" alt="" class="w-8 h-8 rounded object-cover">
+            <span class="text-lg font-bold text-white ml-3"><?= $_SESSION['namaAdmin'] ?></span>
         </a>
         <ul class="mt-4">
             <li class="mb-1 group">
@@ -51,10 +58,10 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                         <a href="karyawan.php" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Karyawan</a>
                     </li>
                     <li class="mb-4">
-                        <a href="#" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Data Izin</a>
+                        <a href="jenis_izin.php" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Data Izin</a>
                     </li>
                     <li class="mb-4">
-                        <a href="#" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Departemen</a>
+                        <a href="departemen.php" class="text-gray-300 text-sm flex items-center hover:text-gray-100 before:contents-[''] before:w-1 before:h-1 before:rounded-full before:bg-gray-300 before:mr-3">Departemen</a>
                     </li>
                 </ul>
             </li>
@@ -95,7 +102,7 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
             <ul class="ml-auto flex items-center">
                 <li class="mr-1 dropdown">
                     <button type="button" id="DropdownToggle" class="dropdown-toggle flex items-center">
-                        <img src="https://placehold.co/32x32" alt="" class="w-8 h-8 rounded block object-cover align-middle">
+                        <img src="view-image.php?id=<?php echo $id ?>" alt="" class="w-8 h-8 rounded block object-cover align-middle">
                     </button>
                     <ul id="submenu" class="absolute shadow-md hidden py-1.5 right-5 rounded-md bg-white border border-gray-100 w-full max-w-[120px]">
                         <li>
@@ -112,7 +119,7 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
             <div class="bg-gray-900 rounded-md items-center h-[230px]">
                 <div class="flex flex-col">
                     <h1 class="text-white text-4xl p-6 mt-10 font-extrabold mb-0">
-                        Selamat Datang <?=$_SESSION['namaAdmin']?> !
+                        Selamat Datang <?= $_SESSION['namaAdmin'] ?> !
                     </h1>
                     <p class="text-white text-lg ml-6 ">
                         Anda dapat mengelola pengajuan secara online
@@ -127,7 +134,7 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                     <div class="flex justify-between mb-4">
                         <div>
                             <div class="flex items-center mb-1">
-                                <div class="text-2xl font-semibold"><?=$totalIzin?></div>
+                                <div class="text-2xl font-semibold"><?= $totalIzin ?></div>
                             </div>
                             <div class="text-sm font-medium text-gray-400">Pengajuan Izin</div>
                         </div>
@@ -136,14 +143,14 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                 <div class="bg-white rounded-md border border-gray-100 p-6 shadow-md shadow-black/5">
                     <div class="flex justify-between mb-6">
                         <div>
-                            <div class="text-2xl font-semibold mb-1"><?=$totalKaryawan?></div>
+                            <div class="text-2xl font-semibold mb-1"><?= $totalKaryawan ?></div>
                             <div class="text-sm font-medium text-gray-400">Karyawan</div>
                         </div>
                     </div>
                     <a href="karyawan.php" class="text-blue-500 font-medium text-sm hover:text-blue-600">View details</a>
                 </div>
             </div>
-            
+
             <div class="bg-white border border-gray-100 shadow-md shadow-black/5 p-6 rounded-md">
                 <div class="flex justify-between mb-4 items-start">
                     <div class="font-medium">Riwayat Izin</div>
@@ -162,26 +169,29 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
                         </thead>
                         <tbody>
                             <?php
-                            $result = mysqli_query($connect,"SELECT * FROM pengajuan_izin p JOIN karyawan k ON p.id_karyawan = k.id_karyawan JOIN jenis_izin j ON p.id_jenis = j.id_jenis");
-                            while($data = mysqli_fetch_assoc($result)){
+                            $result = mysqli_query($connect, "SELECT * FROM pengajuan_izin p 
+                                                    JOIN karyawan k ON p.id_karyawan = k.id_karyawan 
+                                                    JOIN jenis_izin j ON p.id_jenis = j.id_jenis 
+                                                    WHERE k.id_departemen = '$id_departemen_admin' AND p.status IN ('Ditolak' , 'Diterima') LIMIT 5");
+                            while ($data = mysqli_fetch_assoc($result)) {
                             ?>
-                            <tr>
-                                <td class="py-2 px-4 border-b border-b-gray-50">
-                                <span class="text-[13px] font-medium text-gray-400"><?= $data['nama'] ?></span>
-                                </td>
-                                <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400"><?= $data['jenis_izin'] ?></span>
-                                </td>
-                                <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['tanggal_izin_mulai']?></span>
-                                </td>
-                                <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['tanggal_izin_selesai']?></span>
-                                </td>
-                                <td class="py-2 px-4 border-b border-b-gray-50">
-                                    <span class="text-[13px] font-medium text-gray-400"><?=$data['status']?></span>
-                                </td>
-                            </tr>
+                                <tr>
+                                    <td class="py-2 px-4 border-b border-b-gray-50">
+                                        <span class="text-[13px] font-medium text-gray-400"><?= $data['nama'] ?></span>
+                                    </td>
+                                    <td class="py-2 px-4 border-b border-b-gray-50">
+                                        <span class="text-[13px] font-medium text-gray-400"><?= $data['jenis_izin'] ?></span>
+                                    </td>
+                                    <td class="py-2 px-4 border-b border-b-gray-50">
+                                        <span class="text-[13px] font-medium text-gray-400"><?= $data['tanggal_izin_mulai'] ?></span>
+                                    </td>
+                                    <td class="py-2 px-4 border-b border-b-gray-50">
+                                        <span class="text-[13px] font-medium text-gray-400"><?= $data['tanggal_izin_selesai'] ?></span>
+                                    </td>
+                                    <td class="py-2 px-4 border-b border-b-gray-50">
+                                        <span class="text-[13px] font-medium text-gray-400"><?= $data['status'] ?></span>
+                                    </td>
+                                </tr>
                             <?php
                             }
                             ?>
@@ -192,8 +202,9 @@ $totalKaryawan = $rowKaryawan['totalKaryawan'];
         </div>
     </main>
     <!-- end: Main -->
-    
+
     <script src="../script.js" defer></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
 </body>
+
 </html>

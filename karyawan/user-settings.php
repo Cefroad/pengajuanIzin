@@ -24,6 +24,55 @@ if ($row['profile_picture']) {
     // Jika tidak ada gambar profil, gunakan gambar placeholder
     $profile_image = 'https://placehold.co/32x32';
 }
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Mendapatkan data dari form
+    $current_password = $_POST['current-password'];
+    $new_password = $_POST['password'];
+    $confirm_password = $_POST['confirm-password'];
+
+    // Memastikan admin sudah login dan ID admin tersedia di session
+    if (!isset($_SESSION['id_karyawan'])) {
+        echo "<script>alert('Anda harus login terlebih dahulu!'); window.location='../';</script>";
+        exit();
+    }
+
+    // Mengambil ID admin dari session
+    $karyawan_id = $_SESSION['id_karyawan'];  // ID admin yang login
+
+    // Cek apakah password baru dan konfirmasi password cocok
+    if ($new_password !== $confirm_password) {
+        echo "<script>alert('Password baru dan konfirmasi password tidak cocok!');</script>";
+    } else {
+        // Mengambil password lama yang terhash dari database
+        $query = "SELECT password FROM karyawan WHERE id_karyawan = '$karyawan_id'";
+        $result = mysqli_query($connect, $query);
+        
+        if ($result) {
+            $row = mysqli_fetch_assoc($result);
+            $hashed_password = $row['password'];
+
+            // Verifikasi password lama
+            if (password_verify($current_password, $hashed_password)) {
+                // Hash password baru
+                $hashed_new_password = password_hash($new_password, PASSWORD_BCRYPT);
+
+                // Update password di database
+                $update_query = "UPDATE karyawan SET password = '$hashed_new_password' WHERE id_karyawan = '$karyawan_id'";
+                if (mysqli_query($connect, $update_query)) {
+                    echo "<script>alert('Password berhasil diperbarui!'); window.location='user-settings.php';</script>";
+                } else {
+                    echo "<script>alert('Gagal memperbarui password!');</script>";
+                }
+            } else {
+                echo "<script>alert('Password lama salah!');</script>";
+            }
+        } else {
+            echo "<script>alert('Error saat mengambil data password lama.');</script>";
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -203,7 +252,7 @@ if ($row['profile_picture']) {
             <!-- Card to Change Password -->
             <div class="p-4 mb-4 bg-white border border-gray-200 rounded-lg shadow-sm 2xl:col-span-2">
                 <h3 class="mb-4 text-xl font-semibold">Password information</h3>
-                <form action="#">
+                <form action="" method="POST">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="col-span-1">
                             <label for="current-password" class="block mb-2 text-sm font-medium text-gray-900">Current password</label>
@@ -211,7 +260,7 @@ if ($row['profile_picture']) {
                         </div>
                         <div class="col-span-1">
                             <label for="password" class="block mb-2 text-sm font-medium text-gray-900">New password</label>
-                            <input data-popover-target="popover-password" data-popover-placement="bottom" type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="••••••••" required>
+                            <input name="password" data-popover-target="popover-password" data-popover-placement="bottom" type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" placeholder="••••••••" required>
                         </div>
                         <div class="col-span-1">
                             <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900">Confirm password</label>
@@ -241,6 +290,19 @@ if ($row['profile_picture']) {
             const fileName = document.getElementById('fileName');
             fileName.textContent = fileInput.files.length > 0 ? fileInput.files[0].name : 'No file chosen';
         }
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+    var fileName = event.target.files[0] ? event.target.files[0].name : 'No file chosen';
+    var maxLength = 20; // Batas maksimum karakter nama file
+
+    // Jika nama file lebih panjang dari maxLength, potong dan tambahkan "..."
+    if (fileName.length > maxLength) {
+        fileName = fileName.substring(0, maxLength) + '...';
+    }
+
+    // Tampilkan nama file yang dipilih atau 'No file chosen' jika tidak ada file
+    document.getElementById('fileName').textContent = fileName;
+});
+
     </script>
 </body>
 

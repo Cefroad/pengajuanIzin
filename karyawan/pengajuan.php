@@ -1,5 +1,18 @@
 <?php
+include 'koneksi.php';
 session_start();
+
+$id = $_SESSION['id_karyawan'];
+$query_karyawan = mysqli_query($connect, "SELECT * FROM karyawan WHERE id_karyawan = $id");
+$row_k = mysqli_fetch_assoc($query_karyawan);
+
+
+// Ensure the user is logged in
+if (!isset($_SESSION['id_karyawan'])) {
+    header('Location: login.php');
+    exit;
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,16 +80,14 @@ session_start();
             <ul class="ml-auto flex items-center">
                 <li class="mr-1 dropdown">
                     <button type="button" id="DropdownToggle" class="flex items-center">
-                        <img src="view-image.php?id=<?php echo $_SESSION['id_karyawan']; ?>" class="profile-img w-8 h-8
+                        <img src="view-image.php?id=<?php echo $id ?>" class="profile-img w-8 h-8
                          rounded object-cover" alt="Profile Picture">
                     </button>
                     <ul id="submenu" class="absolute shadow-md hidden py-1.5 right-5 rounded-md bg-white border
                      border-gray-100 w-full max-w-[120px]">
-                        <li><a href="#" class="flex items-center text-[13px] py-1.5 px-3 text-gray-600
-                         hover:text-blue-500 hover:bg-gray-50">Profile</a></li>
-                        <li><a href="#" class="flex items-center text-[13px] py-1.5 px-3 text-gray-600
+                        <li><a href="user-settings.php" class="flex items-center text-[13px] py-1.5 px-3 text-gray-600
                          hover:text-blue-500 hover:bg-gray-50">Settings</a></li>
-                        <li><a href="#" class="flex items-center text-[13px] py-1.5 px-3 text-gray-600
+                        <li><a href="logout.php" class="flex items-center text-[13px] py-1.5 px-3 text-gray-600
                          hover:text-blue-500 hover:bg-gray-50">Logout</a></li>
                     </ul>
                 </li>
@@ -97,7 +108,7 @@ session_start();
                                 <span>Remaining Izin</span>
                             </div>
                             <div class="text-3xl">
-                                20
+                                <?php echo $row_k['remaining_izin'] ?> Hari
                             </div>
                         </div>
                     </div>
@@ -115,7 +126,7 @@ session_start();
                     group-hover:border-gray-700 group-hover:shadow-lg">
                         <div class="flex flex-col items-start">
                             <div class="flex items-center mb-2">
-                                <span class="text-lg transition-transform duration-300 group-hover:rotate-12" aria-hidden="true">😎</span>
+                                <span class="text-lg transition-transform duration-300 group-hover:rotate-12" aria-hidden="true">✉️</span>
                                 <h3 class="ml-2 text-base font-semibold text-gray-800 group-hover:text-gray-600">
                                     Ajukan Permohonan Secara Online!
                                 </h3>
@@ -136,9 +147,9 @@ session_start();
                         <div class="rounded-t bg-white mb-0 px-6 py-6">
                             <div class="flex flex-col items-start">
                                 <!-- Nama Pengguna -->
-                                <h6 id="userName" class="text-blueGray-700 text-xl font-bold">John Doe</h6>
+                                <h6 id="userName" class="text-blueGray-700 text-xl font-bold"><?php echo $row_k['nama'] ?></h6>
                                 <!-- Tanggal Pengajuan -->
-                                <p id="submissionDate" class="text-blueGray-500 text-sm mt-2">Tanggal Pengajuan: 10 Desember 2024</p>
+                                <p id="submissionDate" class="text-blueGray-500 text-sm mt-2">Tanggal Pengajuan : <?php echo $indo_date ?></p>
                             </div>
                             <button id="closeModal" class="absolute top-4 right-4 bg-gray-800 text-white active:bg-gray-900 font-bold uppercase text-xs px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none ease-linear transition-all duration-150">
                                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -147,100 +158,53 @@ session_start();
                             </button>
                         </div>
                         <div class="flex-auto px-4 lg:px-6 py-8 pt-0 overflow-y-auto max-h-[30rem]">
-                            <form>
+                            <form action="insert_pengajuan.php" method="POST" enctype="multipart/form-data">
                                 <!-- Tanggal Izin Section -->
                                 <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Tanggal Izin</h6>
                                 <div class="flex flex-wrap">
                                     <div class="w-full lg:w-6/12 px-4">
                                         <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Tanggal Izin Mulai</label>
-                                        <input type="date" name="start_date" id="startDate" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
+                                        <input type="date" name="start_date" id="startDate" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" required>
                                     </div>
                                     <div class="w-full lg:w-6/12 px-4">
                                         <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Tanggal Izin Berakhir</label>
-                                        <input type="date" name="end_date" id="endDate" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
+                                        <input type="date" name="end_date" id="endDate" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" required>
                                     </div>
                                 </div>
 
                                 <!-- Jenis Izin Section with Select Box -->
-                                <hr class="mt-6 border-b-1 border-blueGray-300">
                                 <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Jenis Izin</h6>
-                                <div class="flex flex-wrap">
-                                    <div class="w-full lg:w-12/12 px-4">
-                                        <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Pilih Jenis Izin</label>
-                                        <div class="relative">
-                                            <select name="leave_type" id="leaveTypeSelect" class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 appearance-none bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150 hover:border-blue-600 focus:border-blue-600" onchange="toggleFields()">
-                                                <option value="" disabled selected>-- Pilih Jenis Izin --</option>
-                                                <option value="cuti">Cuti</option>
-                                                <option value="sakit">Sakit</option>
-                                                <option value="izin_khusus">Izin Khusus</option>
-                                            </select>
-                                            <!-- Adjusted V Icon -->
-                                            <label for="leaveTypeSelect" class="cursor-pointer absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                                                <svg class="w-4 h-4 mx-2 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="18 15 12 9 6 15"></polyline>
-                                                </svg>
-                                            </label>
-                                        </div>
-                                    </div>
+                                <div class="w-full lg:w-12/12 px-4">
+                                    <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Pilih Jenis Izin</label>
+                                    <select name="leave_type" id="leaveTypeSelect" class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 appearance-none bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" onchange="checkMaxDays()" required>
+                                        <option value="" disabled selected>-- Pilih Jenis Izin --</option>
+                                        <?php
+                                        $query_izin = mysqli_query($connect, "SELECT * FROM jenis_izin");
+                                        while ($row = mysqli_fetch_assoc($query_izin)) {
+                                        ?>
+                                            <option value="<?php echo $row['id_jenis']; ?>" data-max-days="<?php echo $row['maks_hari']; ?>"><?php echo $row['jenis_izin']; ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
 
-                                <!-- Additional Fields for  "Cuti" -->
-                                <div id="selectAdditionalFields" class="hidden">
-                                    <hr class="mt-6 border-b-1 border-blueGray-300">
-                                    <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Keterangan Lain</h6>
-                                    <div class="flex flex-wrap">
-                                        <div class="w-full lg:w-12/12 px-4">
-                                            <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Keterangan</label>
-                                            <select id="cutiType" class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 appearance-none bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" onchange="toggleFields()">
-                                                <option value="liburan">Liburan</option>
-                                                <option value="lainnya">Lainnya</option>
-                                            </select>
-
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Alasan Section (Visible only when "Cuti" is selected) -->
-                                <div id="alasanSection" class="hidden">
-                                    <hr class="mt-6 border-b-1 border-blueGray-300">
-                                    <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Alasan</h6>
-                                    <div class="w-full lg:w-12/12 px-4">
-                                        <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Alasan Cuti</label>
-                                        <textarea type="text" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" rows="4">Masukkan alasan cuti di sini...</textarea>
-                                    </div>
+                                <!-- Alasan Section -->
+                                <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Alasan</h6>
+                                <div class="w-full lg:w-12/12 px-4">
+                                    <textarea name="reason" class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150" rows="4"></textarea>
                                 </div>
 
-                                <!-- New Dropdown for Izin Khusus -->
-                                <div id="izinKhususSection" class="hidden">
-                                    <hr class="mt-6 border-b-1 border-blueGray-300">
-                                    <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Izin Khusus</h6>
-                                    <div class="flex flex-wrap">
-                                        <div class="w-full lg:w-12/12 px-4">
-                                            <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Pilih Keterangan Izin Khusus</label>
-                                            <select class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 appearance-none bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
-                                                <option value="pernikahan">Pernikahan</option>
-                                                <option value="kelahiran">Kelahiran</option>
-                                                <option value="kematian">Kematian</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Lampiran File Section -->
-                                <hr class="mt-6 border-b-1 border-blueGray-300">
+                                <!-- Lampiran File Section (Upload as BLOB) -->
                                 <h6 class="text-blueGray-400 text-sm mt-3 mb-4 font-bold uppercase">Lampirkan File</h6>
-                                <div class="flex flex-wrap">
-                                    <div class="w-full lg:w-12/12 px-4">
-                                        <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2">Pilih File</label>
-                                        <input type="file" class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
-                                    </div>
+                                <div class="w-full lg:w-12/12 px-4">
+                                    <input type="file" name="attachment" class="border-2 border-gray-300 px-3 py-3 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150">
                                 </div>
 
-                                <!-- Buttons -->
+                                <!-- Submit Button -->
                                 <div class="flex justify-end mt-6">
-                                    <button id="cancelBtn" class="bg-white hover:bg-gray-300 text-gray-800 font-bold uppercase px-6 py-3 rounded shadow ease-linear transition-all duration-150 mr-2">Cancel</button>
-                                    <button id="saveBtn" class="bg-gray-800 text-white font-bold uppercase px-6 py-3 rounded shadow hover:shadow-md ease-linear transition-all duration-150">Save</button>
+                                    <button type="submit" class="bg-gray-800 text-white font-bold uppercase px-6 py-3 rounded shadow hover:shadow-md ease-linear transition-all duration-150">Save</button>
                                 </div>
                             </form>
+
                         </div>
                     </div>
                 </div>
@@ -257,79 +221,8 @@ session_start();
             </span>
         </div>
     </footer>
-    <script>
-        const modal = document.getElementById("modal");
-        const modalContent = document.getElementById("modalContent");
-        const openBtn = document.getElementById("openModal");
-        const closeBtn = document.getElementById("closeModal");
-        const cancelBtn = document.getElementById("cancelBtn");
 
-        function openModal() {
-            modal.classList.remove("hidden");
-            document.body.style.overflow = "hidden";
-
-            // Triggering animation for modal appearance
-            setTimeout(() => {
-                modalContent.classList.remove("opacity-0", "translate-y-[-100%]");
-                modalContent.classList.add("opacity-100", "translate-y-0");
-            }, 10);
-        }
-
-        function closeModal() {
-            // Reverse the transition
-            modalContent.classList.remove("opacity-100", "translate-y-0");
-            modalContent.classList.add("opacity-0", "translate-y-[-100%]");
-
-            setTimeout(() => {
-                modal.classList.add("hidden");
-                document.body.style.overflow = "auto";
-            }, 300); // Wait for the transition to complete
-        }
-
-        openBtn.addEventListener("click", openModal);
-        closeBtn.addEventListener("click", closeModal);
-        cancelBtn.addEventListener("click", closeModal);
-
-        modal.addEventListener("click", (e) => {
-            if (e.target === modal) closeModal();
-        });
-
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-                closeModal();
-            }
-        });
-
-
-        function toggleFields() {
-            const leaveType = document.getElementById('leaveTypeSelect').value;
-            const cutiType = document.getElementById('cutiType') ? document.getElementById('cutiType').value : ''; // Check for Cuti options
-            const alasanSection = document.getElementById('alasanSection');
-            const selectAdditionalFields = document.getElementById('selectAdditionalFields');
-            const izinKhususSection = document.getElementById('izinKhususSection');
-
-            // Hide all additional sections first
-            alasanSection.classList.add('hidden');
-            selectAdditionalFields.classList.add('hidden');
-            izinKhususSection.classList.add('hidden');
-
-            // Show additional fields for "Cuti"
-            if (leaveType === 'cuti') {
-                selectAdditionalFields.classList.remove('hidden');
-                // Show alasan section when "lainnya" is selected
-                if (cutiType === 'lainnya') {
-                    alasanSection.classList.remove('hidden');
-                } else {
-                    alasanSection.classList.add('hidden');
-                }
-            }
-            // Show "Izin Khusus" section
-            else if (leaveType === 'izin_khusus') {
-                izinKhususSection.classList.remove('hidden');
-            }
-        }
-    </script>
-
+    <script src="script.js"></script>
     <script src="../script.js" defer></script>
     <script src="https://unpkg.com/@popperjs/core@2"></script>
 </body>

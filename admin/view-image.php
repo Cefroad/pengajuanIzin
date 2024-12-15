@@ -2,12 +2,10 @@
 session_start();
 include "koneksi.php";
 
-// Pastikan ada ID karyawan yang valid di URL
 if (isset($_GET['id'])) {
-    $id_karyawan = $_GET['id'];
+    $id = $_GET['id'];
 
-    // Query untuk mengambil gambar berdasarkan ID karyawan
-    $query = "SELECT profile_picture, image_type FROM karyawan WHERE id_karyawan = '$id_karyawan'";
+    $query = "SELECT profile_picture, image_type FROM admin WHERE id_admin = '$id'";
     $result = mysqli_query($connect, $query);
 
     if ($result && mysqli_num_rows($result) > 0) {
@@ -15,7 +13,6 @@ if (isset($_GET['id'])) {
         $image_data = $row['profile_picture'];
         $image_type = $row['image_type'];
 
-        // Tentukan header sesuai tipe gambar
         if ($image_type == 'image/jpeg') {
             header("Content-Type: image/jpeg");
         } elseif ($image_type == 'image/png') {
@@ -27,7 +24,6 @@ if (isset($_GET['id'])) {
             exit;
         }
 
-        // Output gambar
         echo $image_data;
     } else {
         echo "Gambar tidak ditemukan!";

@@ -1,12 +1,29 @@
 <?php
 session_start();
 include "koneksi.php";
+
+// Ambil ID karyawan dari sesi
 $id_karyawan = $_SESSION['id_karyawan'];
-$queryIzin = "SELECT COUNT(*) AS totalIzin FROM pengajuan_izin WHERE id_karyawan = $id_karyawan";
-$resultIzin = mysqli_query($connect, $queryIzin);
-$rowIzin = mysqli_fetch_assoc($resultIzin);
-$totalIzin = $rowIzin['totalIzin'];
+
+// Query untuk menghitung total izin
+$queryTotalIzin = "SELECT COUNT(*) AS totalIzin FROM pengajuan_izin WHERE id_karyawan = $id_karyawan";
+$resultTotalIzin = mysqli_query($connect, $queryTotalIzin);
+$rowTotalIzin = mysqli_fetch_assoc($resultTotalIzin);
+$totalIzin = $rowTotalIzin['totalIzin'];
+
+// Query untuk menghitung total izin yang ditolak
+$queryTotalDitolak = "SELECT COUNT(*) AS totalDitolak FROM pengajuan_izin WHERE id_karyawan = $id_karyawan AND status = 'Ditolak'";
+$resultTotalDitolak = mysqli_query($connect, $queryTotalDitolak);
+$rowTotalDitolak = mysqli_fetch_assoc($resultTotalDitolak);
+$totalDitolak = $rowTotalDitolak['totalDitolak'];
+
+// Query untuk menghitung total izin yang diterima
+$queryTotalDiterima = "SELECT COUNT(*) AS totalDiterima FROM pengajuan_izin WHERE id_karyawan = $id_karyawan AND status = 'Diterima'";
+$resultTotalDiterima = mysqli_query($connect, $queryTotalDiterima);
+$rowTotalDiterima = mysqli_fetch_assoc($resultTotalDiterima);
+$totalDiterima = $rowTotalDiterima['totalDiterima'];
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <style>
@@ -155,7 +172,7 @@ $totalIzin = $rowIzin['totalIzin'];
                                 </svg>
                             </div>
                             <div class="text-3xl">
-                                <?= $totalIzin ?>
+                                <?= $totalDiterima?>
                             </div>
                         </div>
                     </div>
@@ -171,7 +188,7 @@ $totalIzin = $rowIzin['totalIzin'];
                                 </svg>
                             </div>
                             <div class="text-3xl">
-                                <?= $totalIzin ?>
+                                <?= $totalDitolak ?>
                             </div>
                         </div>
                     </div>

@@ -10,12 +10,41 @@ $row = mysqli_fetch_assoc($result);
 
 // Tentukan gambar profil yang akan ditampilkan
 if ($row['profile_picture']) {
-    // Jika gambar profil ada, tampilkan gambar dari database
     $profile_image = 'data:' . $row['image_type'] . ';base64,' . base64_encode($row['profile_picture']);
 } else {
-    // Jika tidak ada gambar profil, gunakan gambar placeholder
     $profile_image = 'https://placehold.co/32x32';
 }
+
+$limit = 5;
+
+// Dapatkan halaman saat ini (default halaman 1)
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;  
+
+$queryCount = "SELECT COUNT(*) AS total FROM pengajuan_izin p JOIN karyawan k ON p.id_karyawan = k.id_karyawan JOIN jenis_izin j ON p.id_jenis = j.id_jenis WHERE k.id_karyawan = $id_karyawan";
+$resultCount = mysqli_query($connect, $queryCount);
+$rowCount = mysqli_fetch_assoc($resultCount);
+$totalData = $rowCount['total'];  
+
+$totalPages = ceil($totalData / $limit);
+$statusFilter = isset($_GET['statusFilter']) ? $_GET['statusFilter'] : '';
+
+$query1 = "SELECT * FROM pengajuan_izin p 
+          JOIN karyawan k ON p.id_karyawan = k.id_karyawan 
+          JOIN jenis_izin j ON p.id_jenis = j.id_jenis 
+          WHERE k.id_karyawan = $id_karyawan";
+
+// Tambahkan filter status jika ada
+if (!empty($statusFilter)) {
+    $query1 .= " AND p.status = '$statusFilter'";
+}
+$query1 .= " LIMIT $limit OFFSET $offset";
+
+$result = mysqli_query($connect, $query1);
+
+// Variabel untuk rentang data
+$start = $offset + 1;
+$end = min($offset + $limit, $totalData);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -103,20 +132,22 @@ if ($row['profile_picture']) {
                 </div>
 
                 <!-- Filters Section -->
+                <!-- Filter Status -->
                 <div class="my-2 flex sm:flex-row flex-col">
                     <div class="flex flex-row mb-1 sm:mb-0">
-                        <!-- Buat filter-->
-                    </div>
-                    <div class="block relative">
-                        <span class="h-full absolute inset-y-0 left-0 flex items-center pl-2">
-                            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current text-gray-500">
-                                <path d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"></path>
-                            </svg>
-                        </span>
-                        <input placeholder="Search"
-                            class="  appearance-none rounded-l-xl rounded-r-xl border border-gray-400 block pl-8 pr-6 py-2 w-full bg-white text-sm placeholder-gray-400 text-gray-700 focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none" />
+                        <form method="GET" action="">
+                            <label for="statusFilter" class="mr-2">Filter Status:</label>
+                            <select name="statusFilter" id="statusFilter" class="border px-4 py-2 rounded-lg text-sm">
+                                <option value="">Semua Status</option>
+                                <option value="Sedang Menunggu" <?= isset($_GET['statusFilter']) && $_GET['statusFilter'] == 'Sedang Menunggu' ? 'selected' : '' ?>>Sedang Menunggu</option>
+                                <option value="Disetujui" <?= isset($_GET['statusFilter']) && $_GET['statusFilter'] == 'Disetujui' ? 'selected' : '' ?>>Disetujui</option>
+                                <option value="Ditolak" <?= isset($_GET['statusFilter']) && $_GET['statusFilter'] == 'Ditolak' ? 'selected' : '' ?>>Ditolak</option>
+                            </select>
+                            <button type="submit" class="ml-2 bg-gray-800 text-white px-4 py-2 rounded-lg">Terapkan</button>
+                        </form>
                     </div>
                 </div>
+
 
                 <!-- Table Section -->
                 <div class="overflow-x-auto -mx-4 sm:-mx-8 px-4 sm:px-8 py-4">
@@ -145,50 +176,77 @@ if ($row['profile_picture']) {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p class="text-gray-900 whitespace-no-wrap">1</p>
-                                    </td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p class="text-gray-900 whitespace-no-wrap">2024-12-07</p>
-                                    </td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p class="text-gray-900 whitespace-no-wrap">Sakit</p>
-                                    </td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <a href="path-to-lampiran/lampiran.pdf" download class="flex items-center text-blue-500 hover:text-blue-700">
-                                            <!-- Ikon PDF -->
-                                            <i class="ri-file-pdf-2-line text-gray-800 text-lg mr-2"></i>
-                                            <!-- Nama file -->
-                                            lampiran.pdf
-                                        </a>
-                                    </td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <p class="text-white bg-green-500 rounded-full px-3 py-1 text-center inline-block">Disetujui</p>
-                                    </td>
-                                    <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
-                                        <button class="text-sm bg-white border border-gray-800 hover:bg-gray-700 hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
-                                            Detail
-                                        </button>
-                                    </td>
-                                </tr>
+                                <?php
+                                $no = $start;
+
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                ?>
+                                    <tr>
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <p class="text-gray-900 whitespace-no-wrap"><?= $no++ ?></p>
+                                        </td>
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <p class="text-gray-900 whitespace-no-wrap"><?= $row['tanggal_pengajuan'] ?></p>
+                                        </td>
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <p class="text-gray-900 whitespace-no-wrap"><?= $row['jenis_izin'] ?></p>
+                                        </td>
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <?php if (!empty($row['lampiran'])): ?>
+                                                <a href="download-lampiran.php?id=<?= $row['id_pengajuan'] ?>" class="flex items-center text-blue-500 hover:text-blue-700">
+                                                    <i class="ri-file-pdf-2-line text-gray-800 text-lg mr-2"></i>
+                                                    <?= $row['filename'] ?>
+                                                </a>
+                                            <?php else: ?>
+                                                <span class="text-gray-500 italic">Tidak ada lampiran</span>
+                                            <?php endif; ?>
+                                        </td>
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <?php
+                                            // Tentukan warna berdasarkan status
+                                            $status = $row['status'];
+                                            if ($status == 'Sedang Menunggu') {
+                                                $bgColor = 'bg-orange-500'; // Warna oranye untuk menunggu
+                                            } elseif ($status == 'Ditolak') {
+                                                $bgColor = 'bg-red-500'; // Warna merah untuk ditolak
+                                            } elseif ($status == 'Diterima') {
+                                                $bgColor = 'bg-green-500'; // Warna hijau untuk disetujui
+                                            } else {
+                                                $bgColor = 'bg-gray-500'; // Default jika status tidak terdeteksi
+                                            }
+                                            ?>
+                                            <p class="text-white <?php echo $bgColor; ?> rounded-full px-3 py-1 text-center inline-block"><?php echo $status; ?></p>
+                                        </td>
+
+                                        <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                            <button class="text-sm bg-white border border-gray-800 hover:bg-gray-700 hover:text-white text-gray-800 font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                                                Detail
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php
+                                }
+                                ?>
                                 <!-- Add more rows as needed -->
                             </tbody>
                         </table>
 
                         <div class="px-5 py-5 bg-white border-t flex flex-col xs:flex-row items-center xs:justify-between">
                             <span class="text-xs xs:text-sm text-gray-900">
-                                Showing 1 to 1 of 1 Entries
+                                Showing <?= $start ?> to <?= $end ?> of <?= $totalData ?> Entries
                             </span>
                             <div class="inline-flex mt-2 xs:mt-0">
-                                <button class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l">
+                                <!-- Previous Button -->
+                                <a href="?page=<?= max($page - 1, 1) ?>&statusFilter=<?= urlencode($statusFilter) ?>" class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l <?= $page <= 1 ? 'cursor-not-allowed' : '' ?>" <?= $page <= 1 ? 'disabled' : '' ?>>
                                     Prev
-                                </button>
-                                <button class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r">
+                                </a>
+                                <!-- Next Button -->
+                                <a href="?page=<?= min($page + 1, $totalPages) ?>&statusFilter=<?= urlencode($statusFilter) ?>" class="text-sm bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r <?= $page >= $totalPages ? 'cursor-not-allowed' : '' ?>" <?= $page >= $totalPages ? 'disabled' : '' ?>>
                                     Next
-                                </button>
+                                </a>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>

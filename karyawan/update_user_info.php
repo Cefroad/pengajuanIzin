@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user_id = $_SESSION['id_karyawan'];
 
     // Query untuk update data
-    $query = "UPDATE karyawan SET username='$username', nama='$name', email='$email',WHERE id_karyawan='$user_id'";
+    $query = "UPDATE karyawan SET username='$username', nama='$name', email='$email'  WHERE id_karyawan='$user_id'";
 
     // Eksekusi query
     if (mysqli_query($connect, $query)) {
@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['email'] = $email;
 
         // Redirect ke halaman user-settings dengan status success
-        header("Location: user-settings.php?status=success");
+        echo "<script>alert('Data Berhasil Di ubah');window.location='user-settings.php';</script>";
         exit();  // Pastikan selalu menggunakan exit setelah header untuk menghentikan eksekusi skrip
     } else {
         // Jika gagal, tampilkan error

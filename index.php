@@ -1,63 +1,88 @@
 <?php
 session_start();
-include "koneksi.php";  // Koneksi ke database
+include "koneksi.php";
 
-// Handle the POST request for login
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
+    $username = mysqli_real_escape_string($connect, $_POST["username"]);
     $password = $_POST["password"];
-    $user_type = $_POST["user_type"];  // Menyimpan pilihan user type dari dropdown
+    $user_type = $_POST["user_type"];
 
     if ($user_type == 'karyawan') {
-        // Cek login untuk Karyawan
-        $result = mysqli_query($connect, "SELECT k.*, d.nama_departemen FROM karyawan k 
-        JOIN departemen d ON k.id_departemen = d.id_departemen
-        WHERE k.username = '$username' AND k.password = '$password'");
+        $query = "SELECT k.*, d.nama_departemen FROM karyawan k 
+                  JOIN departemen d ON k.id_departemen = d.id_departemen
+                  WHERE k.username = '$username'";
+        $result = mysqli_query($connect, $query);
 
-        $cek = mysqli_num_rows($result);
-        if ($cek > 0) {
+        if ($result && mysqli_num_rows($result) > 0) {
             $data = mysqli_fetch_assoc($result);
-            $_SESSION['id_karyawan'] = $data['id_karyawan'];
-            $_SESSION['nama'] = $data['nama'];
-            $_SESSION['username'] = $data['username'];
-            $_SESSION['email'] = $data['email'];
-            $_SESSION['departemen'] = $data['nama_departemen'];
-            $_SESSION['id_departemen'] = $data['id_departemen'];
-            $_SESSION['login_success'] = true;  // Set session variable for successful login
-            $_SESSION['user_type'] = 'karyawan';  // Mark as karyawan login
-            header("Location: index.php");
-            exit();
+
+            if ($data['status_akun'] == 'nonaktif') {
+                echo "<script>alert('Akun Anda belum diaktifkan. Silakan hubungi admin.'); window.location='index.php';</script>";
+                exit();
+            }
+
+            if (password_verify($password, $data['password'])) {
+                $_SESSION['id_karyawan'] = $data['id_karyawan'];
+                $_SESSION['nama'] = $data['nama'];
+                $_SESSION['username'] = $data['username'];
+                $_SESSION['email'] = $data['email'];
+                $_SESSION['departemen'] = $data['nama_departemen'];
+                $_SESSION['id_departemen'] = $data['id_departemen'];
+                $_SESSION['izin'] = $data['remaining_izin'];
+                $_SESSION['login_success'] = true;
+                $_SESSION['user_type'] = 'karyawan';
+                header("Location: index.php");
+                exit();
+            } else {
+                $_SESSION['login_success'] = false; 
+                header("Location: index.php");
+                exit();
+            }
         } else {
-            $_SESSION['login_success'] = false; // Failed login
-            header("Location: index.php");  // Redirect back to login page
+            $_SESSION['login_success'] = false; 
+            header("Location: index.php");
             exit();
         }
     } else if ($user_type == 'admin') {
-        // Cek login untuk Admin
-        $result1 = mysqli_query($connect, "SELECT * FROM admin WHERE username = '$username' AND password = '$password'");
-        $cek1 = mysqli_num_rows($result1);
-        if ($cek1 > 0) {
+        $query1 = "SELECT * FROM admin WHERE username = '$username'";
+        $result1 = mysqli_query($connect, $query1);
+
+        if ($result1 && mysqli_num_rows($result1) > 0) {
             $data1 = mysqli_fetch_assoc($result1);
-            $_SESSION['id_admin'] = $data1['id_admin'];
-            $_SESSION['username'] = $data1['username'];
-            $_SESSION['namaAdmin'] = $data1['nama'];
-            $_SESSION['email'] = $data1['email'];
-            $_SESSION['login_success'] = true; // Set session variable for successful login
-            $_SESSION['user_type'] = 'admin';  // Mark as admin login
-            header("Location: index.php");
-            exit();
+
+            if ($data1['status_akun'] == 'nonaktif') {
+                echo "<script>alert('Akun Anda belum diaktifkan. Silakan hubungi admin.'); window.location='index.php';</script>";
+                exit();
+            }
+
+            if (password_verify($password, $data1['password'])) {
+                $_SESSION['id_admin'] = $data1['id_admin'];
+                $_SESSION['username'] = $data1['username'];
+                $_SESSION['namaAdmin'] = $data1['nama'];
+                $_SESSION['email'] = $data1['email'];
+                $_SESSION['login_success'] = true;
+                $_SESSION['user_type'] = 'admin';
+                header("Location: index.php");
+                exit();
+            } else {
+                $_SESSION['login_success'] = false;
+                header("Location: index.php");
+                exit();
+            }
         } else {
-            $_SESSION['login_success'] = false; // Failed login
-            header("Location: index.php");  // Redirect back to login page
+            $_SESSION['login_success'] = false;
+            header("Location: index.php");
             exit();
         }
     } else {
         $_SESSION['not_selected'] = true;
-        header("Location: index.php");  // Redirect back to login page
+        header("Location: index.php");
         exit();
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -146,7 +171,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <p class="text-sm mt-2">Aplikasi Pengajuan Izin</p>
                     </div>
 
-                    <form class="space-y-4 md:space-y-6" action="" method="post">
+                    <form class="space-y-4 md:space-y-6" action="" method="post" autocomplete="off">
                         <div class="relative">
                             <select id="user-type" name="user_type" class="bg-gray-50 border border-gray-300 text-gray-900 
                             sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 pr-10
@@ -211,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="my-8 text-center">
                     <i class="ri-check-fill w-14 text-6xl text-green-500 inline"></i>
                     <h4 class="text-xl text-gray-800 font-semibold mt-4">Login Successfully!</h4>
-                    <p class="text-sm text-gray-500 leading-relaxed mt-4">Harap tunggu anda akan segera dipindahkan ke halaman dashboard karyawan.</p>
+                    <p class="text-sm text-gray-500 leading-relaxed mt-4">Harap tunggu anda akan segera dipindahkan ke halaman dashboard <?=$_SESSION['user_type']?></p>
                 </div>
                 <button type="button" class="px-5 py-2.5 w-full rounded-lg text-white text-sm border-none outline-none
                  bg-gray-800 hover:bg-gray-700" onclick="closeModal()">Got it</button>
